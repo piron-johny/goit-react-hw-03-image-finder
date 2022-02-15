@@ -1,10 +1,10 @@
 import { Header } from './SearchBar.styled';
 import Form from '../Form';
 
-const SearchBar = ({fetchValue}) => {
+const SearchBar = ({ onSubmit }) => {
   return (
     <Header>
-      <Form fetchValue={fetchValue}/>
+      <Form onSubmit={onSubmit} />
     </Header>
   );
 };

@@ -7,19 +7,16 @@ class Form extends Component {
   };
 
   onHandleInput = e => {
-    const value = e.target.value;
+    const value = e.target.value.toLowerCase();
+
     this.setState({ search: value });
   };
 
   onHandleSubmit = e => {
     e.preventDefault();
 
-    this.props.fetchValue(this.state.search)
+    this.props.onSubmit(this.state.search);
 
-    this.reset();
-  };
-
-  reset = () => {
     this.setState({ search: '' });
   };
 
