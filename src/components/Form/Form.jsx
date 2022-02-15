@@ -13,25 +13,29 @@ class Form extends Component {
 
   onHandleSubmit = e => {
     e.preventDefault();
+
+    this.props.fetchValue(this.state.search)
+
+    this.reset();
   };
 
   reset = () => {
-    this.setState({ seatch: '' });
+    this.setState({ search: '' });
   };
 
   render() {
-    const inputValue = this.state.search;
+    const { search } = this.state;
     return (
-      <StyledForm>
+      <StyledForm onSubmit={this.onHandleSubmit}>
         <Input
           onChange={this.onHandleInput}
-          value={inputValue}
+          value={search}
           type="text"
           autocomplete="off"
           autoFocus
           placeholder="Search images and photos"
         />
-        <Button type="submit" onSubmit={this.onHandleSubmit}>
+        <Button type="submit">
           <Span>Search</Span>
         </Button>
       </StyledForm>

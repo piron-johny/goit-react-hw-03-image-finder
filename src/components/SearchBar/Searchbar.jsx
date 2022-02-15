@@ -1,11 +1,11 @@
-import { StyledHeader } from './SearchBar.styled';
+import { Header } from './SearchBar.styled';
 import Form from '../Form';
 
-const SearchBar = () => {
+const SearchBar = ({fetchValue}) => {
   return (
-    <StyledHeader>
-      <Form />
-    </StyledHeader>
+    <Header>
+      <Form fetchValue={fetchValue}/>
+    </Header>
   );
 };
 
