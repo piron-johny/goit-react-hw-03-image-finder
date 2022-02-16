@@ -1,25 +1,38 @@
 import axios from 'axios';
-
-import { StyledImageGallery, Image, GalleryItem } from './ImageGallery.styled';
 import { Component } from 'react';
+import { StyledImageGallery, Image, GalleryItem } from './ImageGallery.styled';
+import api from 'services/api';
 
 class ImageGallery extends Component {
   state = {
-    images: null,
+    images: [],
+    searchValue: '',
+    isLoading: false,
+    error: null,
   };
 
   async componentDidMount() {
-    const value = this.props.searchValue;
-    try {
-      const data = await axios.get(
-        `https://pixabay.com/api/?q=cat&page=1&key=24644022-4984203066fb287d0befab6c3&image_type=photo&orientation=horizontal&per_page=12&q=cat}`
-      );
-      const images = data.data.hits;
-      console.log('dataImages :>> ', images);
+    this.setState({ isLoading: true });
 
+    const { searchValue } = this.props;
+    this.setState({ searchValue });
+
+    try {
+      const { searchValue } = this.state;
+      const images = await api.fetchMoviesWithQuery(searchValue);
+
+      console.log('images :>> ', images);
       this.setState({ images });
     } catch (error) {
-      console.log(error);
+      this.setState({ error });
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  }
+
+  async componentDidUpdate(prevState, prevProps) {
+    if (prevState.searchValue !== this.state.searchValue) {
+      this.setState({ searchValue: this.props.searchValue });
     }
   }
 
@@ -27,11 +40,11 @@ class ImageGallery extends Component {
     const { images } = this.state;
     return (
       <>
-        {images && (
+        {images.length > 0 && (
           <StyledImageGallery>
-            {images.map(({ id, previewURL, tags }) => (
+            {images.map(({ id, webformatURL, tags }) => (
               <GalleryItem key={id}>
-                <Image src={previewURL} alt={tags} />
+                <Image src={webformatURL} alt={tags} />
               </GalleryItem>
             ))}
           </StyledImageGallery>
