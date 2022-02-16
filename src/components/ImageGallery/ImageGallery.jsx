@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import { Component } from 'react';
 import { StyledImageGallery, Image, GalleryItem } from './ImageGallery.styled';
 import {fetchMoviesWithQuery} from 'services/api';
