@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Component } from 'react';
 import { StyledImageGallery, Image, GalleryItem } from './ImageGallery.styled';
-import api from 'services/api';
+import {fetchMoviesWithQuery} from 'services/api';
 
 class ImageGallery extends Component {
   state = {
@@ -19,7 +19,7 @@ class ImageGallery extends Component {
 
     try {
       const { searchValue } = this.state;
-      const images = await api.fetchMoviesWithQuery(searchValue);
+      const images = await fetchMoviesWithQuery(searchValue);
 
       console.log('images :>> ', images);
       this.setState({ images });

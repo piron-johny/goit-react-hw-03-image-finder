@@ -8,6 +8,4 @@ export const fetchMoviesWithQuery = async searchValue => {
   return response.data.hits;
 };
 
-export default {
-  fetchMoviesWithQuery,
-};
+
