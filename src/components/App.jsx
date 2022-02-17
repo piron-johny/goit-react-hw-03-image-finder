@@ -8,7 +8,6 @@ class App extends Component {
   };
 
   handleFormSubmit = searchValue => {
-    console.log('searchValue >>', searchValue);
     this.setState({ searchValue });
   };
 

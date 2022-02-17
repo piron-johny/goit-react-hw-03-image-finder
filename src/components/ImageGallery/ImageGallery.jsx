@@ -1,6 +1,6 @@
 // import axios from 'axios';
 import { Component } from 'react';
-import { StyledImageGallery, Image, GalleryItem } from './ImageGallery.styled';
+import ImageList from '../ImageList';
 import { fetchMoviesWithQuery } from 'services/api';
 import Loader from '../Loader';
 import Button from '../Button';
@@ -8,23 +8,29 @@ import Button from '../Button';
 class ImageGallery extends Component {
   state = {
     images: [],
-    // loading: false,
+    page: 1,
     searchValue: '',
     error: null,
     status: 'idle',
   };
 
-  async componentDidUpdate(_, prevProps) {
+  async componentDidUpdate(prevState, prevProps) {
     const prevSearchValue = prevProps.searchValue;
     const nextSearchValue = this.props.searchValue;
+    const prevPage = prevState.page;
+    const nextPage = this.state.page;
+    
+    if (prevSearchValue !== nextSearchValue ) {
+    // if ( prevPage !== nextPage) {
+      console.log('prevPage :>> ', prevPage);
+      console.log('nextPage :>> ', nextPage);
 
-    if (prevSearchValue !== nextSearchValue) {
       this.setState({ searchValue: nextSearchValue, status: 'pending' });
-      // this.setState({ loading: true });
+      const { page, searchValue } = this.state;
+
       try {
-        const images = await fetchMoviesWithQuery(nextSearchValue);
+        const images = await fetchMoviesWithQuery(searchValue, page);
         this.setState({ images, status: 'resolved' });
-        // this.setState({ images, loading: false });
 
         if (images.length === 0) {
           this.setState({ status: 'rejected' });
@@ -35,8 +41,17 @@ class ImageGallery extends Component {
     }
   }
 
+  onLoadMore = () => {
+    console.log('НАЖАТА КНОПКА');
+    this.setState(prevState => {
+      return {
+        page: prevState.page + 1,
+      };
+    });
+  };
+
   render() {
-    const { images, status, loading } = this.state;
+    const { images, status } = this.state;
     if (status === 'idle') {
       return <p>Enter a request</p>;
     }
@@ -48,15 +63,8 @@ class ImageGallery extends Component {
     if (status === 'resolved') {
       return (
         <>
-          <StyledImageGallery>
-            {images.map(({ id, webformatURL, tags }) => (
-              <GalleryItem key={id}>
-                <Image src={webformatURL} alt={tags} />
-              </GalleryItem>
-            ))}
-          </StyledImageGallery>
-          <Button />
-          {/* {status === 'pending' && <Loader />} */}
+          <ImageList images={images} />
+          <Button onLoadMore={this.onLoadMore} />
         </>
       );
     }
@@ -64,7 +72,9 @@ class ImageGallery extends Component {
     if (status === 'pending') {
       return <Loader />;
     }
-    return null;
+
+    // return null;
+    return <Button onLoadMore={this.onLoadMore} />;
   }
 }
 
