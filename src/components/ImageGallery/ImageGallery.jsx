@@ -1,7 +1,8 @@
 // import axios from 'axios';
 import { Component } from 'react';
-import ImageList from '../ImageList';
 import { fetchMoviesWithQuery } from 'services/api';
+import { Paragraph } from './ImageGallery.styled';
+import ImageList from '../ImageList';
 import Loader from '../Loader';
 import Button from '../Button';
 
@@ -9,30 +10,34 @@ class ImageGallery extends Component {
   state = {
     images: [],
     page: 1,
+    loading: false,
     searchValue: '',
     error: null,
     status: 'idle',
   };
 
-  async componentDidUpdate(prevState, prevProps) {
-    const prevSearchValue = prevProps.searchValue;
+  async componentDidUpdate(prevProps, prevState) {
     const nextSearchValue = this.props.searchValue;
-    const prevPage = prevState.page;
-    const nextPage = this.state.page;
-    
-    if (prevSearchValue !== nextSearchValue ) {
-    // if ( prevPage !== nextPage) {
-      console.log('prevPage :>> ', prevPage);
-      console.log('nextPage :>> ', nextPage);
 
-      this.setState({ searchValue: nextSearchValue, status: 'pending' });
-      const { page, searchValue } = this.state;
+    if (prevProps.searchValue !== nextSearchValue)
+      this.setState({ images: [] });
+
+    if (
+      prevProps.searchValue !== nextSearchValue ||
+      prevState.page !== this.state.page
+    ) {
+      this.setState({ searchValue: nextSearchValue, loading: true });
+      const { page } = this.state;
 
       try {
-        const images = await fetchMoviesWithQuery(searchValue, page);
-        this.setState({ images, status: 'resolved' });
+        const fetchImages = await fetchMoviesWithQuery(nextSearchValue, page);
+        this.setState(({ images }) => ({
+          images: [...images, ...fetchImages],
+          status: 'resolved',
+          loading: false,
+        }));
 
-        if (images.length === 0) {
+        if (fetchImages.length === 0) {
           this.setState({ status: 'rejected' });
         }
       } catch (error) {
@@ -42,39 +47,35 @@ class ImageGallery extends Component {
   }
 
   onLoadMore = () => {
-    console.log('НАЖАТА КНОПКА');
-    this.setState(prevState => {
-      return {
-        page: prevState.page + 1,
-      };
-    });
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
+
+  onOpenModal = e => {
+    console.log('e.target', e.target);
   };
 
   render() {
-    const { images, status } = this.state;
+    const { images, status, loading } = this.state;
     if (status === 'idle') {
-      return <p>Enter a request</p>;
+      return <Paragraph>Enter a request</Paragraph>;
     }
 
     if (status === 'rejected') {
-      return <p>Error request</p>;
+      return (
+        <Paragraph color={'red'}>Error request. Try again please 😊</Paragraph>
+      );
     }
 
     if (status === 'resolved') {
       return (
         <>
-          <ImageList images={images} />
-          <Button onLoadMore={this.onLoadMore} />
+          <ImageList images={images} onOpenModal={this.onOpenModal} />
+          {loading ? <Loader /> : <Button onLoadMore={this.onLoadMore} />}
         </>
       );
     }
 
-    if (status === 'pending') {
-      return <Loader />;
-    }
-
-    // return null;
-    return <Button onLoadMore={this.onLoadMore} />;
+    return null;
   }
 }
 

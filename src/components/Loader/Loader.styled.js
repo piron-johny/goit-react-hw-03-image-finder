@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 export const StyledLoader = styled.div`
-  margin: 100px auto 0;
+  margin: 50px auto;
   width: 70px;
   text-align: center;
 
