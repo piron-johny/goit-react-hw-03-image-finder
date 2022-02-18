@@ -2,6 +2,7 @@
 import { Component } from 'react';
 import { fetchMoviesWithQuery } from 'services/api';
 import { Paragraph } from './ImageGallery.styled';
+import Modal from '../Modal';
 import ImageList from '../ImageList';
 import Loader from '../Loader';
 import Button from '../Button';
@@ -14,6 +15,8 @@ class ImageGallery extends Component {
     searchValue: '',
     error: null,
     status: 'idle',
+    objectOfModal: {},
+    isModal: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -51,11 +54,20 @@ class ImageGallery extends Component {
   };
 
   onOpenModal = e => {
-    console.log('e.target', e.target);
+    const idImage = e.target.parentNode.id;
+    const objectOfModal = this.state.images.find(
+      image => image.id === +idImage
+    );
+    this.setState({ isModal: true, objectOfModal });
   };
 
+  onCloseModal = () => {
+    this.setState({ isModal: false });
+
+  }
+
   render() {
-    const { images, status, loading } = this.state;
+    const { images, status, loading, objectOfModal, isModal } = this.state;
     if (status === 'idle') {
       return <Paragraph>Enter a request</Paragraph>;
     }
@@ -69,6 +81,7 @@ class ImageGallery extends Component {
     if (status === 'resolved') {
       return (
         <>
+          <Modal modalObject={objectOfModal} isModal={isModal} onCloseModal={this.onCloseModal}/>
           <ImageList images={images} onOpenModal={this.onOpenModal} />
           {loading ? <Loader /> : <Button onLoadMore={this.onLoadMore} />}
         </>
