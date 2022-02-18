@@ -41,6 +41,15 @@ export const StyledModal = styled.div`
     width: 40px;
     position: absolute;
     top: -30px;
-    right: -30px
+    right: -30px;
+  }
+
+  .closeBtn {
+    font-size: 40px;
+    color: #fff;
+    transition: color 200ms linear;
+    &:hover {
+      color: #ddd;
+    }
   }
 `;

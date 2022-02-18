@@ -4,14 +4,17 @@ import { IoCloseCircleSharp } from 'react-icons/io5';
 
 const modalRoot = document.getElementById('root-modal');
 
+
+
 const Modal = ({ modalObject, isModal, onCloseModal }) => {
-  console.log('modalObject :>> ', modalObject);
+  const {largeImageURL, tags} = modalObject;
+  console.log('largeImageURL :>> ', largeImageURL);
   return createPortal(
     <StyledModal className={isModal && 'active'}>
       <div>
-        <img src={modalObject.largeImageURL} alt={modalObject.tags} />
+        <img src={largeImageURL} alt={tags} />
         <button type="button" onClick={onCloseModal}>
-          <IoCloseCircleSharp size="40" color='white'/>
+          <IoCloseCircleSharp className='closeBtn' />
         </button>
       </div>
     </StyledModal>,
@@ -20,4 +23,3 @@ const Modal = ({ modalObject, isModal, onCloseModal }) => {
 };
 
 export default Modal;
-// IoCloseCircleSharp

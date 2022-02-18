@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import { Component } from 'react';
 import { fetchMoviesWithQuery } from 'services/api';
 import { Paragraph } from './ImageGallery.styled';
@@ -22,8 +21,18 @@ class ImageGallery extends Component {
   async componentDidUpdate(prevProps, prevState) {
     const nextSearchValue = this.props.searchValue;
 
-    if (prevProps.searchValue !== nextSearchValue)
+    if (prevProps.searchValue !== nextSearchValue) {
       this.setState({ images: [] });
+    }
+
+    if (prevState.page !== this.state.page) { // РАЗОБРАТЬСЯ СО СКРОЛОМ + РАЗОБРАТЬСЯ С МОДАЛКОЙ !!!!!!!!!!!!
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
+      console.log('document.documentElement :>> ', document.documentElement.scrollHeight);
+      console.dir('document.documentElement :>> ', document.documentElement);
+    }
 
     if (
       prevProps.searchValue !== nextSearchValue ||
@@ -63,8 +72,7 @@ class ImageGallery extends Component {
 
   onCloseModal = () => {
     this.setState({ isModal: false });
-
-  }
+  };
 
   render() {
     const { images, status, loading, objectOfModal, isModal } = this.state;
@@ -81,7 +89,11 @@ class ImageGallery extends Component {
     if (status === 'resolved') {
       return (
         <>
-          <Modal modalObject={objectOfModal} isModal={isModal} onCloseModal={this.onCloseModal}/>
+          <Modal
+            modalObject={objectOfModal}
+            isModal={isModal}
+            onCloseModal={this.onCloseModal}
+          />
           <ImageList images={images} onOpenModal={this.onOpenModal} />
           {loading ? <Loader /> : <Button onLoadMore={this.onLoadMore} />}
         </>
