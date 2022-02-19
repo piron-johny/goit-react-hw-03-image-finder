@@ -13,7 +13,6 @@ export const StyledModal = styled.div`
   z-index: 1200;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 400ms linear;
   &.active {
     opacity: 1;
     pointer-events: auto;
@@ -21,7 +20,7 @@ export const StyledModal = styled.div`
   & div {
     position: relative;
     max-width: calc(100vw - 100px);
-    max-height: calc(100vh - 50px);
+    max-height: calc(100vh - 100px);
   }
   & img {
     display: block;
@@ -37,11 +36,11 @@ export const StyledModal = styled.div`
     align-items: center;
     padding: 0;
     border-radius: 50%;
-    height: 40px;
-    width: 40px;
+    height: 30px;
+    width: 30px;
     position: absolute;
-    top: -30px;
-    right: -30px;
+    top: 30px;
+    right: 30px;
   }
 
   .closeBtn {

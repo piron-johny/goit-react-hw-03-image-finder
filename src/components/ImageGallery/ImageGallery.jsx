@@ -14,37 +14,28 @@ class ImageGallery extends Component {
     searchValue: '',
     error: null,
     status: 'idle',
-    objectOfModal: {},
+    largeImg: '',
     isModal: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
     const nextSearchValue = this.props.searchValue;
 
-    if (prevProps.searchValue !== nextSearchValue) {
-      this.setState({ images: [] });
-    }
-
-    if (prevState.page !== this.state.page) { // РАЗОБРАТЬСЯ СО СКРОЛОМ + РАЗОБРАТЬСЯ С МОДАЛКОЙ !!!!!!!!!!!!
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      });
-      console.log('document.documentElement :>> ', document.documentElement.scrollHeight);
-      console.dir('document.documentElement :>> ', document.documentElement);
-    }
-
     if (
       prevProps.searchValue !== nextSearchValue ||
       prevState.page !== this.state.page
     ) {
+      // if (prevProps.searchValue !== nextSearchValue) {
+      //   this.setState({ images: [], page: 1 });
+      // }
+
       this.setState({ searchValue: nextSearchValue, loading: true });
       const { page } = this.state;
 
       try {
         const fetchImages = await fetchMoviesWithQuery(nextSearchValue, page);
         this.setState(({ images }) => ({
-          images: [...images, ...fetchImages],
+          images: page > 1 ? [...images, ...fetchImages] : fetchImages,
           status: 'resolved',
           loading: false,
         }));
@@ -52,8 +43,15 @@ class ImageGallery extends Component {
         if (fetchImages.length === 0) {
           this.setState({ status: 'rejected' });
         }
+
+        if (this.state.page > 1) {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
       } catch (error) {
-        this.setState({ error });
+        this.setState({ error: error.response.error });
       }
     }
   }
@@ -63,19 +61,19 @@ class ImageGallery extends Component {
   };
 
   onOpenModal = e => {
-    const idImage = e.target.parentNode.id;
-    const objectOfModal = this.state.images.find(
-      image => image.id === +idImage
-    );
-    this.setState({ isModal: true, objectOfModal });
+    const { source } = e.target.dataset;
+    this.setState({ largeImg: source, isModal: true });
   };
 
   onCloseModal = () => {
-    this.setState({ isModal: false });
+    this.setState({ isModal: false, largeImg: '' });
   };
 
+  // --------------------------------render------------------------
+
   render() {
-    const { images, status, loading, objectOfModal, isModal } = this.state;
+    const { images, status, loading, isModal, largeImg } = this.state;
+
     if (status === 'idle') {
       return <Paragraph>Enter a request</Paragraph>;
     }
@@ -90,11 +88,13 @@ class ImageGallery extends Component {
       return (
         <>
           <Modal
-            modalObject={objectOfModal}
             isModal={isModal}
             onCloseModal={this.onCloseModal}
+            largeImg={largeImg}
           />
+
           <ImageList images={images} onOpenModal={this.onOpenModal} />
+
           {loading ? <Loader /> : <Button onLoadMore={this.onLoadMore} />}
         </>
       );
