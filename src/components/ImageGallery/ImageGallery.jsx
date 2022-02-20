@@ -23,11 +23,11 @@ class ImageGallery extends Component {
 
     if (
       prevProps.searchValue !== nextSearchValue ||
-      prevState.page !== this.state.page
+      prevState.page !== this.state.page // ИЗ-ЗА ТОГО, ЧТО ТУТ УСЛОВИЕ ОБНОВЛЕНИЯ PAGE. НЕ ЗНАЮ КАК СКИНУТЬ ПРИ САБМИТЕ
     ) {
-      // if (prevProps.searchValue !== nextSearchValue) {
-      //   this.setState({ images: [], page: 1 });
-      // }
+      if (prevProps.searchValue !== nextSearchValue) {
+        this.setState({ images: [], page: 1 }); // ПРОБЛЕМА В ОБНУДЕНИИ PAGE. ПРИ ДРУГОМ ЗАПРОСЕ ОТОБРАЖАЕТСЯ ПЕРВАЯ И ТЕКУЩАЯЯ СТРАНИЦА
+      }
 
       this.setState({ searchValue: nextSearchValue, loading: true });
       const { page } = this.state;
@@ -36,13 +36,8 @@ class ImageGallery extends Component {
         const fetchImages = await fetchMoviesWithQuery(nextSearchValue, page);
         this.setState(({ images }) => ({
           images: page > 1 ? [...images, ...fetchImages] : fetchImages,
-          status: 'resolved',
           loading: false,
         }));
-
-        if (fetchImages.length === 0) {
-          this.setState({ status: 'rejected' });
-        }
 
         if (this.state.page > 1) {
           window.scrollTo({
@@ -72,19 +67,9 @@ class ImageGallery extends Component {
   // --------------------------------render------------------------
 
   render() {
-    const { images, status, loading, isModal, largeImg } = this.state;
+    const { images, loading, isModal, largeImg } = this.state;
 
-    if (status === 'idle') {
-      return <Paragraph>Enter a request</Paragraph>;
-    }
-
-    if (status === 'rejected') {
-      return (
-        <Paragraph color={'red'}>Error request. Try again please 😊</Paragraph>
-      );
-    }
-
-    if (status === 'resolved') {
+    if (!!images.length) {
       return (
         <>
           <Modal
